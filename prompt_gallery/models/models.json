@@ -1,0 +1,10 @@
+{
+  "claude": {
+    "provider": "anthropic",
+    "model": "claude-3-haiku-20240307"
+  },
+  "mixtral": {
+    "provider": "groq",
+    "model": "mixtral-8x7b"
+  }
+}

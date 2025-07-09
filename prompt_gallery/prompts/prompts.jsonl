@@ -1,0 +1,20 @@
+{"prompt": "Translate the sentence 'Good morning, my friend!' into Quechua.", "category": "translation", "note": "Tests indigenous language support and translation clarity."}
+{"prompt": "Translate this sentence to formal Spanish: 'Oye, pásame el celu.'", "category": "translation", "note": "Tests dialect and formality shift from colloquial Spanish."}
+{"prompt": "Translate the phrase 'Home is where the heart is' into French.", "category": "translation", "note": "Tests abstract, idiomatic translation handling."}
+{"prompt": "Translate this into Spanglish: 'I need to go to the store before lunch.'", "category": "translation", "note": "Tests code-switching and bilingual phrasing."}
+{"prompt": "Rewrite this to sound sarcastic: 'I love spending my weekends fixing broken plumbing.'", "category": "tone", "note": "Tests sarcasm generation."}
+{"prompt": "Make this sentence sound more hopeful: 'There’s not much we can do now.'", "category": "tone", "note": "Tests sentiment uplifting."}
+{"prompt": "Turn this into an enthusiastic marketing tagline: 'Our software helps you save time.'", "category": "tone", "note": "Tests tone transformation to persuasive voice."}
+{"prompt": "Rewrite this in a Shakespearean style: 'You stole my lunch.'", "category": "tone", "note": "Tests tone + historical stylization."}
+{"prompt": "If all humans are mammals, and some mammals are nocturnal, can we conclude that some humans are nocturnal?", "category": "logic", "note": "Tests logical syllogism handling."}
+{"prompt": "Which of the following is the odd one out: Apple, Banana, Carrot, Grape?", "category": "logic", "note": "Tests reasoning based on category inference."}
+{"prompt": "You have two ropes that each burn in exactly one hour but at uneven rates. How do you measure 45 minutes?", "category": "logic", "note": "Classic brainteaser for multi-step reasoning."}
+{"prompt": "What comes next in the sequence: 2, 4, 8, 16, ?", "category": "logic", "note": "Tests numeric pattern recognition."}
+{"prompt": "Solve this math problem: (5 + 3) * 2 - 1", "category": "math", "note": "Basic arithmetic test."}
+{"prompt": "If a car travels 60 km in 45 minutes, what’s the average speed in km/h?", "category": "math", "note": "Tests unit conversion and rate calculation."}
+{"prompt": "A recipe calls for 2/3 cup of sugar. How much is needed for half the recipe?", "category": "math", "note": "Tests fraction manipulation."}
+{"prompt": "You are a medieval monk writing a journal entry about a dragon sighting.", "category": "persona", "note": "Tests stylistic role-playing."}
+{"prompt": "Respond as if you're a pirate captain explaining cloud computing.", "category": "persona", "note": "Tests humorous persona blending."}
+{"prompt": "You are Steve Jobs giving a keynote about a new pencil.", "category": "persona", "note": "Tests personality mimicry and persuasive tone."}
+{"prompt": "Critique the reasoning in this statement: 'If we ban soda, people will stop being unhealthy.'", "category": "critique", "note": "Tests ability to detect oversimplified causal claims."}
+{"prompt": "Identify flaws in the following argument: 'Aliens must exist because the universe is too big for them not to.'", "category": "critique", "note": "Tests logical fallacy recognition."}
