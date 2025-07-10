@@ -1,10 +1,10 @@
 {
-  "claude": {
-    "provider": "anthropic",
-    "model": "claude-3-haiku-20240307"
-  },
-  "mixtral": {
+  "gemma": {
     "provider": "groq",
-    "model": "mixtral-8x7b"
+    "model": "gemma2-9b-it"
+  },
+  "llama": {
+    "provider": "groq",
+    "model": "llama-3.1-8b-instant"
   }
 }
