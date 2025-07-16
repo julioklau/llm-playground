@@ -1,44 +1,42 @@
-import os, json, logging, requests
+import os, json, requests, time, random
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
-import time
-import random
+from utils.logger import setup_logger
+from utils.loaders import load_json, load_jsonl
 
+# Load env vars
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-JUDGE_CONFIG_PATH = os.getenv("JUDGE_CONFIG_PATH")
-HEADERS = {"Authorization": f"Bearer {GROQ_API_KEY}"}
-URL = "https://api.groq.com/openai/v1/chat/completions"
+JUDGE_CONFIG_PATH = os.getenv("CONFIG_PATH") + '/judge.json'
 OUTPUT_PATH = os.getenv("OUTPUT_PATH") 
 LOG_PATH = os.getenv("LOG_PATH") + '/llm_judge.log'
+URL = "https://api.groq.com/openai/v1/chat/completions"
+HEADERS = {"Authorization": f"Bearer {GROQ_API_KEY}"}
 
 # Setup logging
-os.makedirs(os.path.dirname(LOG_PATH), exist_ok = True)
-logging.basicConfig(
-    level = logging.INFO,
-    format = "%(asctime)s [%(levelname)s] %(message)s",
-    handlers = [
-        logging.FileHandler(LOG_PATH, encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
+logger = setup_logger("llm_judge", LOG_PATH)
 
-# Locate the most recent response file
+# Load the most recent response file
 def load_responses():
-    output_dir = Path("./outputs")
-    output_files = sorted(output_dir.glob("responses_*.jsonl"), reverse=True)
-    output_path = output_files[0] if output_files else None
-    logging.info(f"📂 Loaded file: {output_path.name}")
+    try:
+        output_dir = Path(OUTPUT_PATH)
+        output_files = sorted(output_dir.glob("responses_*.jsonl"), reverse = True)
+        output_path = output_files[0] if output_files else None
 
-    # Load all model responses
-    rows = [json.loads(line) for line in open(output_path, "r", encoding = "utf-8")]
-    return rows
+        if output_path is None:
+            raise FileNotFoundError("No output files found in /outputs.")
 
-def load_judge_config(path = JUDGE_CONFIG_PATH):
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        logger.info(f"📂 Loaded file: {output_path.name}")
 
+        # Load all model responses
+        rows = load_jsonl(output_path)
+        return rows
+    except FileNotFoundError:
+        logger.error("❌ Error: {e}")
+        exit(1)
+
+# LLM judge to get a scoring from a prompt and a answer
 def ask_judge(prompt, answer, judge_config, retries=3, backoff=2):
     messages = [
         {"role": "system", "content": judge_config['system_prompt']},
@@ -53,28 +51,28 @@ def ask_judge(prompt, answer, judge_config, retries=3, backoff=2):
     
     for attempt in range(1, retries + 1):
         try:
-            r = requests.post(URL, headers=HEADERS, json=payload, timeout=60)
+            r = requests.post(URL, headers = HEADERS, json = payload, timeout = 60)
             r.raise_for_status()
             text = r.json()["choices"][0]["message"]["content"]
             return json.loads(text.strip())
         except requests.exceptions.RequestException as e:
             if r.status_code == 429:
-                logging.warning(f"⚠️ Rate limited (429). Retrying in {backoff}s...")
+                logger.warning(f"⚠️ Rate limited (429). Retrying in {backoff}s...")
             else:
-                logging.warning(f"⚠️ Request error: {e}. Retrying in {backoff}s...")
+                logger.warning(f"⚠️ Request error: {e}. Retrying in {backoff}s...")
             if attempt == retries:
-                logging.error("❌ Max retries reached. Skipping.")
+                logger.error("❌ Max retries reached. Skipping.")
                 raise
             sleep_time = backoff * (2 ** (attempt - 1)) + random.uniform(0, 1)
             time.sleep(sleep_time)
 
-# Grade every row & write new file
-def main():
+# Grade every response & write new file
+def grade_responses():
     ts = datetime.now().strftime("%Y%m%d_%H%M")
     out_path = f"outputs/scored_{ts}.jsonl"
-    judge_config = load_judge_config()
+    judge_config = load_json(JUDGE_CONFIG_PATH)
     rows = load_responses()
-    with open(out_path, "w", encoding="utf-8") as fout:
+    with open(out_path, "w", encoding = "utf-8") as fout:
         for row in rows:
             try:
                 score = ask_judge(row["prompt"], row["response"], judge_config)
@@ -82,14 +80,13 @@ def main():
                 log_str = f"{row['model']} ✓ " + " ".join(
                     f"{k[0].upper()}{score.get(k)}" for k in judge_config['score_fields'] if k in score
                 )
-                logging.info(log_str)
+                logger.info(log_str)
             except Exception as e:
-                logging.error(f"Judge error → {e}")
+                logger.error(f"Judge error → {e}")
                 row.update({"score": None})
             fout.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-    logging.info(f"🏁 All done. Scored file saved to {out_path}")
-
+    logger.info(f"🏁 All done. Scored file saved to {out_path}")
 
 if __name__ == "__main__":
-    main()
+    grade_responses()
