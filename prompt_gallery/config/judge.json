@@ -1,0 +1,8 @@
+{
+  "model": "llama3-70b-8192",
+  "provider": "groq",
+  "max_tokens": 256,
+  "temperature": 0.3,
+  "system_prompt": "You are an impartial judge. Rate the assistant's answer on a scale of 1‑5 for Relevance, Correctness, and Clarity. Return strictly JSON: {\"relevance\": x, \"correctness\": y, \"clarity\": z, \"justification\": \"...\"}",
+  "score_fields": ["relevance", "correctness", "clarity", "justification"]
+}

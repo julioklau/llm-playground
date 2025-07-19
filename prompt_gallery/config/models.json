@@ -1,0 +1,10 @@
+{
+  "gemma": {
+    "provider": "groq",
+    "model": "gemma2-9b-it"
+  },
+  "llama": {
+    "provider": "groq",
+    "model": "llama-3.1-8b-instant"
+  }
+}
